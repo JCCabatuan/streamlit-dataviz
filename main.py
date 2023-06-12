@@ -4,14 +4,14 @@ import pandas as pd
 import pydeck as pdk
 import plotly.express as pt
 from pathlib import Path
-
+import openpyxl
 
 current_dir = Path(__file__).parent if "__file__" in locals() else Path.cwd()
 css_file = current_dir/"styles"/"main.css"
 
 
 #Excel File for Region Population
-excel_file = pd.read_excel("ph2022popdata.xlsx")
+excel_file = pd.read_excel("ph2022popdata.xlsx",engine='openpyxl')
 Data = pd.DataFrame(excel_file)
 age_ranges = ['0-4','5-9','10-14','15-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74','75-79','80 and over']
 Data["Age"] = pd.Categorical(Data["Age"], categories= age_ranges, ordered= True)
@@ -22,7 +22,7 @@ Pop_Data = Data[~Data["Region"].str.contains('Region')]
 
 
 #Excel File for Region Coordinates
-Coor_Data = pd.read_excel("Coordinates.xlsx")
+Coor_Data = pd.read_excel("Coordinates.xlsx",engine='openpyxl')
 
 
 #Merging the Data Sets
