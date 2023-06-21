@@ -5,6 +5,11 @@ import pydeck as pdk
 import plotly.express as pt
 from pathlib import Path
 import openpyxl
+import geopandas as gpd
+
+
+
+
 
 current_dir = Path(__file__).parent if "__file__" in locals() else Path.cwd()
 css_file = current_dir/"styles"/"main.css"
@@ -121,3 +126,36 @@ st.pydeck_chart(pdk.Deck(
         )
     ]
 ))
+
+#------------------INITIALIZE MAP DATA---------------------
+
+geojson_file = 'CAMARINES SUR.geojson'
+data_file = 'CamSurRevLoc.csv'
+df = pd.read_csv(data_file)
+
+latitude = 13.4458
+longitude = 123.416
+
+#-----------------Map using Plotly Express--------------------
+
+gdf = gpd.read_file(geojson_file)
+
+
+plotly_choropleth = pt.choropleth_mapbox(df, geojson=gdf,locations='MUNICIPALI',color='Revenue',
+                                         featureidkey="properties.MUNICIPALI",
+                                         color_continuous_scale= 'Viridis', range_color=(0,12),
+                                         mapbox_style='carto-positron',zoom=7,
+                                         center={"lat":latitude,"lon":longitude}, opacity=0.5,
+                                         labels={'Revenue':'Revenue'}
+)
+
+plotly_choropleth.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+
+st.plotly_chart(plotly_choropleth)
+
+
+
+density_heatmap = pt.density_mapbox(df, lat= 'latitude', lon= 'longitude', z= 'Population', radius=90,
+                                    center=dict(lat=latitude,lon=longitude), zoom=7,
+                                    mapbox_style="open-street-map", hover_data=['MUNICIPALI','Population'])
+st.plotly_chart(density_heatmap)
